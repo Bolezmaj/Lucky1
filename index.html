@@ -31,14 +31,16 @@
                 return;
             }
 
-            // Send payment confirmation to backend
-            const response = await fetch("https://yourserver.com/process-payment", {
+            const hwid = "user-hardware-id"; // Replace this with real hardware ID if needed
+
+            // Send payment confirmation to backend (use your deployed backend URL here)
+            const response = await fetch("lucky1-ncvzj6bdq-bolezmajs-projects.vercel.app", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     orderID: order.id,
                     userEmail: email, // Send the user's email
-                    hwid: "user-hardware-id"
+                    hwid: hwid // Send the user's hardware ID
                 })
             });
 
