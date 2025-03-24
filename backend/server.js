@@ -2,7 +2,7 @@ const express = require('express');
 const fetch = require('node-fetch');
 const nodemailer = require('nodemailer');
 const cors = require('cors');
-require('dotenv').config();
+require('dotenv').config(); // This loads .env file variables when testing locally
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -11,11 +11,12 @@ app.use(express.json()); // To parse JSON payloads
 app.use(cors()); // Allow cross-origin requests (useful for frontend-backend communication)
 
 // Setup Nodemailer transporter (email service)
+// Use environment variables from Vercel
 const transporter = nodemailer.createTransport({
     service: 'gmail', // or another service like 'hotmail', 'smtp.mailtrap.io', etc.
     auth: {
-        user: process.env.EMAIL,  // Your email address
-        pass: process.env.EMAIL_PASSWORD,  // Your email password or app password
+        user: process.env.EMAIL,  // Your email address (configured in Vercel)
+        pass: process.env.EMAIL_PASSWORD,  // Your email password or app password (configured in Vercel)
     }
 });
 
@@ -27,12 +28,12 @@ app.post('/process-payment', async (req, res) => {
     }
 
     try {
-        // Use PayPal REST API to verify the payment (change endpoint for production)
+        // Use PayPal REST API to verify the payment (use sandbox or live PayPal API endpoint)
         const paypalResponse = await fetch(`https://api.sandbox.paypal.com/v2/checkout/orders/${orderID}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${process.env.PAYPAL_ACCESS_TOKEN}`,
+                'Authorization': `Bearer ${process.env.PAYPAL_ACCESS_TOKEN}`,  // Get from Vercel's environment variables
             }
         });
 
@@ -47,12 +48,12 @@ app.post('/process-payment', async (req, res) => {
 
             const keyAuthData = await keyAuthResponse.text(); // License key is expected in plain text
 
-            // Send email with the license key
+            // Send email with the license key to the user
             const mailOptions = {
-                from: process.env.EMAIL, // Sender address
-                to: userEmail,  // Recipient email
-                subject: 'Your Product License Key',  // Subject line
-                text: `Thank you for your purchase! Here is your license key: ${keyAuthData}`, // Plain text body
+                from: process.env.EMAIL, // Sender address (configured in Vercel)
+                to: userEmail,  // Recipient email (user's email passed from frontend)
+                subject: 'Your Product License Key',  // Email subject
+                text: `Thank you for your purchase! Here is your license key: ${keyAuthData}`, // Email body
             };
 
             // Send email
@@ -65,7 +66,7 @@ app.post('/process-payment', async (req, res) => {
                 }
             });
 
-            // Respond with token
+            // Respond with a token (e.g., license token)
             const token = `license-token-for-${hwid}`;  // Example of token generation
             res.json({ token });
         } else {
