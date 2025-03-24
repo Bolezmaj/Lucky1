@@ -44,13 +44,13 @@ app.post('/process-payment', async (req, res) => {
             const keyAuthResponse = await fetch(`https://keyauth.win/api/seller/?sellerkey=9f889ee9b2606ed73c72ed19a924eef9&type=add&expiry=1&mask=******-******-******-******-******-******&level=1&amount=1&format=text`, {
                 method: 'GET',
             });
-            
+
             const keyAuthData = await keyAuthResponse.text(); // License key is expected in plain text
-            
+
             // Send email with the license key
             const mailOptions = {
                 from: process.env.EMAIL, // Sender address
-                to: userEmail,  // List of recipients
+                to: userEmail,  // Recipient email
                 subject: 'Your Product License Key',  // Subject line
                 text: `Thank you for your purchase! Here is your license key: ${keyAuthData}`, // Plain text body
             };
