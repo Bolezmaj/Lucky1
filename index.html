@@ -20,6 +20,8 @@
         },
         onApprove: async function (data, actions) {
             const order = await actions.order.capture();
+            
+            const userEmail = "kglumac7@gmail.com"; // Replace with the actual email from the user input
 
             // Send payment confirmation to backend
             const response = await fetch("https://yourserver.com/process-payment", {
@@ -27,7 +29,7 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     orderID: order.id,
-                    userID: "some-unique-user-id",
+                    userEmail: userEmail, // Send user email for license delivery
                     hwid: "user-hardware-id"
                 })
             });
